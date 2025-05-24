@@ -76,15 +76,20 @@ def generate_invoice(supplier_details, project_number, project_address, contract
     logo_path = "logo/Black logo.png"
     if os.path.exists(logo_path):
         img = Image(logo_path, width=2*inch, height=1*inch)
-        header_data = [[img, Paragraph(f"{COMPANY_NAME}<br/>{COMPANY_ACN}<br/>{COMPANY_ADDRESS}<br/>{COMPANY_EMAIL}<br/>{COMPANY_PHONE}", company_style)]]
+        company_details = Paragraph(f"{COMPANY_NAME}<br/>{COMPANY_ACN}<br/>{COMPANY_ADDRESS}<br/>{COMPANY_EMAIL}<br/>{COMPANY_PHONE}", company_style)
+        header_data = [[img, company_details]]
         header_table = Table(header_data, colWidths=[doc.width/2]*2)
         header_table.setStyle(TableStyle([
             ('ALIGN', (0, 0), (0, 0), 'LEFT'),
             ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('LEFTPADDING', (0, 0), (0, 0), 0),  # Remove left padding for logo
+            ('RIGHTPADDING', (1, 0), (1, 0), 0),  # Remove right padding for text
         ]))
         story.append(header_table)
         story.append(Spacer(1, 20))
+    else:
+        print(f"Logo not found at: {os.path.abspath(logo_path)}")
 
     # Add "INVOICE" title
     title_style = ParagraphStyle(
@@ -212,9 +217,23 @@ def main():
         </head>
     """, unsafe_allow_html=True)
     
-    # Display only the logo
-    if os.path.exists("logo/White logo.png"):
-        st.image("logo/White logo.png", width=200)
+    # Create two columns for logo and company details
+    col1, col2 = st.columns(2)
+    
+    # Column 1: Logo
+    with col1:
+        if os.path.exists("logo/White Logo.png"):
+            st.image("logo/White Logo.png", width=200)
+    
+    # Column 2: Company Details
+    with col2:
+        st.markdown(f"""
+        ### {COMPANY_NAME}
+        {COMPANY_ACN}  
+        {COMPANY_ADDRESS}  
+        {COMPANY_EMAIL}  
+        {COMPANY_PHONE}
+        """)
     
     st.title("Invoice Generator")
     
