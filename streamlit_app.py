@@ -187,9 +187,12 @@ def generate_invoice(supplier_details, project_number, project_address, contract
     return output_file
 
 def get_pdf_download_link(file_path):
-    with open(file_path, "rb") as f:
-        pdf_bytes = f.read()
-    return pdf_bytes
+    try:
+        with open(file_path, "rb") as f:
+            return f.read()
+    except Exception as e:
+        st.error(f"Error reading PDF file: {str(e)}")
+        return None
 
 def main():
     st.set_page_config(
@@ -271,36 +274,42 @@ def main():
                 st.error("Please enter a project address.")
             else:
                 # Generate invoice
-                output_file = generate_invoice(selected_supplier, project_number, project_address, contract_value)
-                
-                # Show success message
-                st.success(f"Invoice {project_number} generated successfully!")
-                
-                # Display calculations
-                st.write("### Invoice Summary")
-                invoice_amount = contract_value * 0.05
-                gst = invoice_amount * 0.10
-                total = invoice_amount + gst
-                
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.write("Total without GST:")
-                    st.write("GST (10%):")
-                    st.write("**Total with GST:**")
-                with col2:
-                    st.write(f"${invoice_amount:.2f}")
-                    st.write(f"${gst:.2f}")
-                    st.write(f"**${total:.2f}**")
-                
-                # Add download link
-                with open(output_file, "rb") as f:
-                    pdf_bytes = f.read()
-                st.download_button(
-                    label="Download PDF",
-                    data=pdf_bytes,
-                    file_name=os.path.basename(output_file),
-                    mime="application/pdf"
-                )
+                try:
+                    output_file = generate_invoice(selected_supplier, project_number, project_address, contract_value)
+                    
+                    # Show success message
+                    st.success(f"Invoice {project_number} generated successfully!")
+                    
+                    # Display calculations
+                    st.write("### Invoice Summary")
+                    invoice_amount = contract_value * 0.05
+                    gst = invoice_amount * 0.10
+                    total = invoice_amount + gst
+                    
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write("Total without GST:")
+                        st.write("GST (10%):")
+                        st.write("**Total with GST:**")
+                    with col2:
+                        st.write(f"${invoice_amount:.2f}")
+                        st.write(f"${gst:.2f}")
+                        st.write(f"**${total:.2f}**")
+                    
+                    # Add download link with error handling
+                    pdf_data = get_pdf_download_link(output_file)
+                    if pdf_data is not None:
+                        try:
+                            st.download_button(
+                                label="Download PDF",
+                                data=pdf_data,
+                                file_name=os.path.basename(output_file),
+                                mime="application/pdf"
+                            )
+                        except Exception as e:
+                            st.error(f"Error creating download button: {str(e)}")
+                except Exception as e:
+                    st.error(f"Error generating invoice: {str(e)}")
 
 if __name__ == "__main__":
     main() 
