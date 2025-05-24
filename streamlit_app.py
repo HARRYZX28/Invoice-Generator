@@ -189,11 +189,25 @@ def generate_invoice(supplier_details, project_number, project_address, contract
 def get_pdf_download_link(file_path):
     with open(file_path, "rb") as f:
         pdf_bytes = f.read()
-    b64_pdf = base64.b64encode(pdf_bytes).decode('utf-8')
-    return f'<a href="data:application/pdf;base64,{b64_pdf}" download="{os.path.basename(file_path)}">Download PDF</a>'
+    return pdf_bytes
 
 def main():
-    st.set_page_config(page_title="Invoice Generator", layout="centered")
+    st.set_page_config(
+        page_title="Invoice Generator",
+        layout="centered",
+        menu_items={
+            'About': "LIFTHUB PTY LTD Invoice Generator"
+        }
+    )
+    
+    # Add Open Graph meta tags for better social sharing
+    st.markdown("""
+        <head>
+            <meta property="og:title" content="LIFTHUB Invoice Generator">
+            <meta property="og:description" content="Generate professional invoices for LIFTHUB PTY LTD">
+            <meta property="og:type" content="website">
+        </head>
+    """, unsafe_allow_html=True)
     
     # Display only the logo
     if os.path.exists("logo/White logo.png"):
@@ -279,7 +293,14 @@ def main():
                     st.write(f"**${total:.2f}**")
                 
                 # Add download link
-                st.markdown(get_pdf_download_link(output_file), unsafe_allow_html=True)
+                with open(output_file, "rb") as f:
+                    pdf_bytes = f.read()
+                st.download_button(
+                    label="Download PDF",
+                    data=pdf_bytes,
+                    file_name=os.path.basename(output_file),
+                    mime="application/pdf"
+                )
 
 if __name__ == "__main__":
     main() 
