@@ -218,6 +218,7 @@ def main():
     
     st.title("Invoice Generator")
     
+    # Form for input
     with st.form("invoice_form"):
         # Current date information
         current_date = datetime.now()
@@ -266,50 +267,48 @@ def main():
         
         # Submit button
         submitted = st.form_submit_button("Generate Invoice")
-        
-        if submitted:
-            if not project_number:
-                st.error("Please enter a project number.")
-            elif not project_address:
-                st.error("Please enter a project address.")
-            else:
+
+    # Handle form submission outside the form
+    if submitted:
+        if not project_number:
+            st.error("Please enter a project number.")
+        elif not project_address:
+            st.error("Please enter a project address.")
+        else:
+            try:
                 # Generate invoice
-                try:
-                    output_file = generate_invoice(selected_supplier, project_number, project_address, contract_value)
-                    
-                    # Show success message
-                    st.success(f"Invoice {project_number} generated successfully!")
-                    
-                    # Display calculations
-                    st.write("### Invoice Summary")
-                    invoice_amount = contract_value * 0.05
-                    gst = invoice_amount * 0.10
-                    total = invoice_amount + gst
-                    
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.write("Total without GST:")
-                        st.write("GST (10%):")
-                        st.write("**Total with GST:**")
-                    with col2:
-                        st.write(f"${invoice_amount:.2f}")
-                        st.write(f"${gst:.2f}")
-                        st.write(f"**${total:.2f}**")
-                    
-                    # Add download link with error handling
-                    pdf_data = get_pdf_download_link(output_file)
-                    if pdf_data is not None:
-                        try:
-                            st.download_button(
-                                label="Download PDF",
-                                data=pdf_data,
-                                file_name=os.path.basename(output_file),
-                                mime="application/pdf"
-                            )
-                        except Exception as e:
-                            st.error(f"Error creating download button: {str(e)}")
-                except Exception as e:
-                    st.error(f"Error generating invoice: {str(e)}")
+                output_file = generate_invoice(selected_supplier, project_number, project_address, contract_value)
+                
+                # Show success message
+                st.success(f"Invoice {project_number} generated successfully!")
+                
+                # Display calculations
+                st.write("### Invoice Summary")
+                invoice_amount = contract_value * 0.05
+                gst = invoice_amount * 0.10
+                total = invoice_amount + gst
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write("Total without GST:")
+                    st.write("GST (10%):")
+                    st.write("**Total with GST:**")
+                with col2:
+                    st.write(f"${invoice_amount:.2f}")
+                    st.write(f"${gst:.2f}")
+                    st.write(f"**${total:.2f}**")
+                
+                # Add download button outside the form
+                pdf_data = get_pdf_download_link(output_file)
+                if pdf_data is not None:
+                    st.download_button(
+                        label="Download PDF",
+                        data=pdf_data,
+                        file_name=os.path.basename(output_file),
+                        mime="application/pdf"
+                    )
+            except Exception as e:
+                st.error(f"Error generating invoice: {str(e)}")
 
 if __name__ == "__main__":
     main() 
