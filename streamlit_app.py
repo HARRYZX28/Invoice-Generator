@@ -75,29 +75,21 @@ def generate_invoice(supplier_details, project_number, project_address, contract
     # Add logo and company details in a table
     current_dir = os.path.dirname(os.path.abspath(__file__))
     logo_path = os.path.join(current_dir, "Logo", "Black logo.png")
-    st.write(f"Debug - Looking for logo at: {logo_path}")
-    
     if os.path.exists(logo_path):
-        st.write("Debug - Logo file found!")
-        try:
-            img = Image(logo_path, width=2*inch, height=1*inch)
-            company_details = Paragraph(f"{COMPANY_NAME}<br/>{COMPANY_ACN}<br/>{COMPANY_ADDRESS}<br/>{COMPANY_EMAIL}<br/>{COMPANY_PHONE}", company_style)
-            header_data = [[img, company_details]]
-            header_table = Table(header_data, colWidths=[doc.width/2]*2)
-            header_table.setStyle(TableStyle([
-                ('ALIGN', (0, 0), (0, 0), 'LEFT'),
-                ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
-                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-                ('LEFTPADDING', (0, 0), (0, 0), 0),
-                ('RIGHTPADDING', (1, 0), (1, 0), 0),
-            ]))
-            story.append(header_table)
-            story.append(Spacer(1, 20))
-            st.write("Debug - Header table added to PDF")
-        except Exception as e:
-            st.error(f"Error adding logo to PDF: {str(e)}")
+        img = Image(logo_path, width=2*inch, height=1*inch)
+        company_details = Paragraph(f"{COMPANY_NAME}<br/>{COMPANY_ACN}<br/>{COMPANY_ADDRESS}<br/>{COMPANY_EMAIL}<br/>{COMPANY_PHONE}", company_style)
+        header_data = [[img, company_details]]
+        header_table = Table(header_data, colWidths=[doc.width/2]*2)
+        header_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+            ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('LEFTPADDING', (0, 0), (0, 0), 0),
+            ('RIGHTPADDING', (1, 0), (1, 0), 0),
+        ]))
+        story.append(header_table)
+        story.append(Spacer(1, 20))
     else:
-        st.write(f"Debug - Logo file not found at: {logo_path}")
         # Add company details without logo as fallback
         company_details = Paragraph(f"{COMPANY_NAME}<br/>{COMPANY_ACN}<br/>{COMPANY_ADDRESS}<br/>{COMPANY_EMAIL}<br/>{COMPANY_PHONE}", company_style)
         header_table = Table([[company_details]], colWidths=[doc.width])
