@@ -286,7 +286,7 @@ def main():
         
         # Contract value input
         contract_value = st.number_input(
-            "Contract Value ($)",
+            "Contract Value ($) (EX GST)",
             min_value=0.01,
             value=1000.00,
             step=100.00,
