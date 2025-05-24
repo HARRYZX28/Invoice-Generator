@@ -74,7 +74,7 @@ def generate_invoice(supplier_details, project_number, project_address, contract
     
     # Add logo and company details in a table
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    logo_path = os.path.join(current_dir, "logo", "Black logo.png")
+    logo_path = os.path.join(current_dir, "Logo", "Black logo.png")
     st.write(f"Debug - Looking for logo at: {logo_path}")
     
     if os.path.exists(logo_path):
@@ -239,8 +239,8 @@ def main():
     
     # Column 1: Logo
     with col1:
-        if os.path.exists("logo/White Logo.png"):
-            st.image("logo/White Logo.png", width=200)
+        if os.path.exists("Logo/White Logo.png"):
+            st.image("Logo/White Logo.png", width=200)
     
     # Column 2: Company Details
     with col2:
